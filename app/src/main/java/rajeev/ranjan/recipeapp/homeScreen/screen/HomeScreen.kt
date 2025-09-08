@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,12 +28,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -46,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,10 +52,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
-import rajeev.ranjan.recipeapp.R
 import rajeev.ranjan.recipeapp.core.RecipeUiModel
 import rajeev.ranjan.recipeapp.core.navigation.AppRoute
 import rajeev.ranjan.recipeapp.core.navigation.NavigationProvider
+import rajeev.ranjan.recipeapp.homeScreen.screen.component.FakeSearchBar
 import rajeev.ranjan.recipeapp.homeScreen.screen.component.RecipeItemCard
 import rajeev.ranjan.recipeapp.homeScreen.viewModel.HomeScreenViewModel
 import rajeev.ranjan.recipeapp.ui.theme.AppColor
@@ -123,7 +119,6 @@ fun HomeScreen(
                 ) {
                     item {
                         Gap(height = 16.dp)
-                        // 👋 Hey <user first name>
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "👋",
@@ -156,16 +151,18 @@ fun HomeScreen(
                     item {
                         // Search Bar
                         FakeSearchBar(
-                            onClick = { NavigationProvider.navController.navigate(AppRoute.Search) },
+                            onClick = { NavigationProvider.navController.navigate(AppRoute.Search()) },
                             modifier = Modifier.padding(vertical = 16.dp)
                         )
                     }
 
                     item {
-                        PopularRecipesSection(
-                            item = uiState.recipes.take(10)
-                        )
-                        Spacer(modifier = Modifier.height(32.dp))
+                        if (uiState.popularRecipes.isNotEmpty()) {
+                            PopularRecipesSection(
+                                item = uiState.popularRecipes
+                            )
+                            Spacer(modifier = Modifier.height(32.dp))
+                        }
                     }
 
                     item {
@@ -206,7 +203,6 @@ fun HomeScreen(
                 ) {
                     Column {
                         FakeSearchBar(onClick = { }, modifier = Modifier.padding(16.dp))
-                        // Add a subtle divider for better visual separation
                         HorizontalDivider(
                             color = AppColor.GREY_2,
                             thickness = 1.dp,
@@ -305,38 +301,4 @@ fun RecipeCard(recipe: RecipeUiModel) {
             Spacer(modifier = Modifier.height(10.dp))
         }
     }
-}
-
-@Composable
-fun FakeSearchBar(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(40.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick() },
-        color = Color(0xFFF5F6FA),
-        tonalElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.search_icon),
-                contentDescription = "Search",
-                tint = AppColor.PRIMARY_BLACK
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                text = "Search Any Recipe",
-                style = MaterialTheme.typography.bodyMedium.copy(color = AppColor.SECONDARY)
-            )
-        }
-    }
-    Gap(height = 16.dp)
 }

@@ -1,7 +1,6 @@
 package rajeev.ranjan.recipeapp.favorite.roomDb
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -10,30 +9,38 @@ import rajeev.ranjan.recipeapp.favorite.model.FavoriteRecipeEntity
 
 @Dao
 interface FavoriteRecipeDao {
-    @Query("SELECT * FROM favorite_recipes ORDER BY savedAt DESC")
-    fun getAllFavorites(): Flow<List<FavoriteRecipeEntity>>
 
-    @Query("SELECT * FROM favorite_recipes WHERE recipeId = :recipeId")
-    suspend fun getFavoriteById(recipeId: Int): FavoriteRecipeEntity?
+    @Query("SELECT * FROM favorite_recipes ORDER BY created_at DESC")
+    fun getAllFavoritesFlow(): Flow<List<FavoriteRecipeEntity>>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_recipes WHERE recipe_id = :recipeId)")
+    fun isFavoriteFlow(recipeId: String): Flow<Boolean>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_recipes WHERE recipe_id = :recipeId)")
+    fun isFavorite(recipeId: String): Boolean
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFavorite(favorite: FavoriteRecipeEntity)
+    suspend fun insertFavorite(favorite: FavoriteRecipeEntity): Long
 
-    @Delete
-    suspend fun deleteFavorite(favorite: FavoriteRecipeEntity)
+    @Query("DELETE FROM favorite_recipes WHERE recipe_id = :recipeId")
+    suspend fun deleteFavoriteByRecipeId(recipeId: String)
 
-    @Query("DELETE FROM favorite_recipes WHERE recipeId = :recipeId")
-    suspend fun deleteFavoriteById(recipeId: Int)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_recipes WHERE recipeId = :recipeId)")
-    suspend fun isFavorite(recipeId: Int): Boolean
+    @Query("UPDATE favorite_recipes SET notification_time = :notificationTime WHERE recipe_id = :recipeId")
+    suspend fun updateNotificationTime(recipeId: String, notificationTime: Long)
 
-    @Query("UPDATE favorite_recipes SET notificationScheduled = :scheduled WHERE recipeId = :recipeId")
-    suspend fun updateNotificationScheduled(recipeId: Int, scheduled: Boolean)
+    @Query(
+        """
+        SELECT * FROM favorite_recipes 
+        WHERE notification_time <= :currentTime 
+        AND is_notified = 0
+        ORDER BY notification_time ASC
+    """
+    )
+    suspend fun getPendingNotifications(currentTime: Long): List<FavoriteRecipeEntity>
 
-    @Query("UPDATE favorite_recipes SET notificationShown = :shown WHERE recipeId = :recipeId")
-    suspend fun updateNotificationShown(recipeId: Int, shown: Boolean)
 
-    @Query("SELECT * FROM favorite_recipes WHERE notificationScheduled = 1 AND notificationShown = 0 AND notificationTime <= :currentTime")
-    suspend fun getRecipesForNotification(currentTime: Long): List<FavoriteRecipeEntity>
+    @Query("UPDATE favorite_recipes SET is_notified = 1 WHERE recipe_id = :recipeId")
+    suspend fun markAsNotified(recipeId: String)
 }

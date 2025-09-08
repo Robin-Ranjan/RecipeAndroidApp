@@ -8,5 +8,9 @@ sealed interface AppRoute {
     data object Home : AppRoute
 
     @Serializable
-    data object Search : AppRoute
+    data class Search(
+        val query: String = "",
+        val recipeId: Int = -1,
+        val fromNotification: Boolean = false
+    ) : AppRoute
 }

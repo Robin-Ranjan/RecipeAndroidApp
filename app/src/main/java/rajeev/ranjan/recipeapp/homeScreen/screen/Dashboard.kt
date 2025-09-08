@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import rajeev.ranjan.recipeapp.favorite.screen.FavoriteRecipeScreenRoot
 
 @Composable
 fun Dashboard() {
@@ -30,14 +31,18 @@ fun Dashboard() {
     Scaffold(
         topBar = {
             Box(
-                modifier = Modifier.fillMaxWidth().height(statusBarHeight)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(statusBarHeight)
             )
         },
         bottomBar = {
             Column {
                 BottomNavBar(navController = navController)
                 Box(
-                    modifier = Modifier.fillMaxWidth().height(navigationBarHeight)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(navigationBarHeight)
                 )
             }
         }
@@ -48,7 +53,7 @@ fun Dashboard() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Home.route) { HomeScreenRoot() }
-            composable(BottomNavItem.Fav.route) { HomeScreenRoot() }
+            composable(BottomNavItem.Fav.route) { FavoriteRecipeScreenRoot() }
         }
     }
 }

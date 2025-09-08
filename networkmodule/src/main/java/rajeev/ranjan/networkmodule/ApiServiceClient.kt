@@ -15,14 +15,6 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-//val CustomHeaderPlugin = createClientPlugin("CustomHeaderPlugin") {
-//    onRequest { request, _ ->
-//        ApiClientUtil.getApiHeader().forEach { (key, value) ->
-//            request.headers.append(key, value)
-//        }
-//    }
-//}
-
 val ApiKeyPlugin = createClientPlugin("ApiKeyPlugin") {
     onRequest { request, _ ->
         val apiKey = ApiClientUtil.getApiKey()

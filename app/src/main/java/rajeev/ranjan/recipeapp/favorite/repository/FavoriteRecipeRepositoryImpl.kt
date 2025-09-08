@@ -1,54 +1,51 @@
 package rajeev.ranjan.recipeapp.favorite.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import rajeev.ranjan.recipeapp.favorite.mapper.CreateFavoriteRequest
-import rajeev.ranjan.recipeapp.favorite.mapper.toDto
-import rajeev.ranjan.recipeapp.favorite.model.FavoriteRecipeDto
 import rajeev.ranjan.recipeapp.favorite.model.FavoriteRecipeEntity
 import rajeev.ranjan.recipeapp.favorite.roomDb.FavoriteRecipeDao
 
-class FavoriteRecipeRepositoryImpl(
-    private val dao: FavoriteRecipeDao
-) : FavoriteRecipeRepository {
+class FavoriteRecipeRepository(
+    private val favoriteRecipeDao: FavoriteRecipeDao
+) {
 
-    override fun getAllFavorites(): Flow<List<FavoriteRecipeDto>> {
-        return dao.getAllFavorites().map { entities ->
-            entities.map { it.toDto() }
-        }
+    fun getAllFavoritesFlow(): Flow<List<FavoriteRecipeEntity>> {
+        return favoriteRecipeDao.getAllFavoritesFlow()
     }
 
-    override suspend fun addToFavorites(request: CreateFavoriteRequest) {
-        val entity = request.toEntity()
-        dao.insertFavorite(entity)
-        // Schedule notification here
-        scheduleNotification(entity)
+    suspend fun addToFavorites(
+        recipeId: String,
+        customNotificationTime: Long? = null,
+        imageUrl: String,
+        title: String,
+        readyInMinutes: String
+    ): Long {
+        val notificationTime = customNotificationTime
+            ?: (System.currentTimeMillis() + (60 * 60 * 1000))
+
+        val favorite = FavoriteRecipeEntity(
+            recipeId = recipeId,
+            imageUrl = imageUrl,
+            title = title,
+            readyInMinutes = readyInMinutes,
+            notificationTime = notificationTime
+        )
+        return favoriteRecipeDao.insertFavorite(favorite)
     }
 
-    override suspend fun removeFromFavorites(recipeId: Int) {
-        dao.deleteFavoriteById(recipeId)
-        // Cancel scheduled notification here
-        cancelNotification(recipeId)
+    suspend fun removeFromFavorites(recipeId: String) {
+        favoriteRecipeDao.deleteFavoriteByRecipeId(recipeId)
     }
 
-    override suspend fun isFavorite(recipeId: Int): Boolean {
-        return dao.isFavorite(recipeId)
+    suspend fun updateNotificationTime(recipeId: String, notificationTime: Long) {
+        favoriteRecipeDao.updateNotificationTime(recipeId, notificationTime)
     }
 
-    override suspend fun getRecipesForNotification(): List<FavoriteRecipeEntity> {
-        return dao.getRecipesForNotification(System.currentTimeMillis())
+    suspend fun getPendingNotifications(): List<FavoriteRecipeEntity> {
+        val currentTime = System.currentTimeMillis()
+        return favoriteRecipeDao.getPendingNotifications(currentTime)
     }
 
-    override suspend fun markNotificationShown(recipeId: Int) {
-        dao.updateNotificationShown(recipeId, true)
-    }
-
-    private fun scheduleNotification(recipe: FavoriteRecipeEntity) {
-        // Implementation for scheduling notification
-        // This would use WorkManager or AlarmManager
-    }
-
-    private fun cancelNotification(recipeId: Int) {
-        // Implementation for canceling scheduled notification
+    suspend fun markAsNotified(recipeId: String) {
+        favoriteRecipeDao.markAsNotified(recipeId)
     }
 }

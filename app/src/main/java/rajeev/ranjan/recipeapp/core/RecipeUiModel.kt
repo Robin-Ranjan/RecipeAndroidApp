@@ -1,102 +1,69 @@
 package rajeev.ranjan.recipeapp.core
 
+import rajeev.ranjan.recipeapp.core.utils.orDefault
+import rajeev.ranjan.recipeapp.recopiDetails.model.RecipeDetailsEntity
+import rajeev.ranjan.recipeapp.search.module.RecipeDetailsDto
+
 data class RecipeUiModel(
     val id: Int,
     val title: String,
     val image: String?,
+    val veryPopular: Boolean,
     val readyInMinutes: Int?,
-    val servings: Int?,
-    val aggregateLikes: Int,
-    val healthScore: Double?,
-    val isFavorite: Boolean,
-    val vegetarian: Boolean,
-    val vegan: Boolean,
-    val glutenFree: Boolean,
-    val dairyFree: Boolean,
-    val ingredients: List<IngredientUiModel> = emptyList()
 )
 
-data class IngredientUiModel(
-    val name: String,
-    val original: String,
-    val amount: Double,
-    val unit: String,
-    val image: String?
-)
+fun RecipeEntity.toUiModel(): RecipeUiModel {
+    return RecipeUiModel(
+        id = id,
+        title = title,
+        image = image,
+        veryPopular = veryPopular,
+        readyInMinutes = readyInMinutes
+    )
+}
 
-// Conversion Extensions
 fun RecipeDto.toEntity(): RecipeEntity {
     return RecipeEntity(
         id = id,
         title = title,
         image = image,
-        imageType = imageType,
-        readyInMinutes = readyInMinutes,
-        servings = servings,
-        sourceUrl = sourceUrl,
-        vegetarian = vegetarian,
-        vegan = vegan,
-        glutenFree = glutenFree,
-        dairyFree = dairyFree,
-        veryHealthy = veryHealthy,
-        cheap = cheap,
         veryPopular = veryPopular,
-        sustainable = sustainable,
-        lowFodmap = lowFodmap,
-        weightWatcherSmartPoints = weightWatcherSmartPoints,
+        readyInMinutes = readyInMinutes
+    )
+}
+
+// Conversion Extensions
+fun RecipeDetailsDto.toEntity(): RecipeDetailsEntity {
+    return RecipeDetailsEntity(
+        title = title.orDefault(),
+        image = image,
+        imageType = imageType,
+        readyInMinutes = readyInMinutes?: 0,
+        servings = servings?: 0,
+        sourceUrl = sourceUrl,
+        vegetarian = vegetarian.orDefault(),
+        vegan = vegan.orDefault(),
+        glutenFree = glutenFree.orDefault(),
+        dairyFree = dairyFree.orDefault(),
+        veryHealthy = veryHealthy.orDefault(),
+        cheap = cheap.orDefault(),
+        veryPopular = veryPopular.orDefault(),
+        sustainable = sustainable.orDefault(),
+        lowFodmap = lowFodmap.orDefault(),
+        weightWatcherSmartPoints = weightWatcherSmartPoints.orDefault(),
         gaps = gaps,
-        preparationMinutes = preparationMinutes,
-        cookingMinutes = cookingMinutes,
-        aggregateLikes = aggregateLikes,
-        healthScore = healthScore,
+        preparationMinutes = preparationMinutes ?: 5,
+        cookingMinutes = cookingMinutes ?: 5,
+        healthScore = healthScore.orDefault(),
         creditsText = creditsText,
         license = license,
         sourceName = sourceName,
-        pricePerServing = pricePerServing
-    )
-}
-
-fun IngredientDto.toEntity(recipeId: Int): RecipeIngredientEntity {
-    return RecipeIngredientEntity(
-        recipeId = recipeId,
-        ingredientId = id,
-        aisle = aisle,
-        image = image,
-        consistency = consistency,
-        name = name,
-        nameClean = nameClean,
-        original = original,
-        originalName = originalName,
-        amount = amount,
-        unit = unit,
-        meta = meta.joinToString(",") // Convert list to string
-    )
-}
-
-fun RecipeEntity.toUiModel(ingredients: List<RecipeIngredientEntity> = emptyList()): RecipeUiModel {
-    return RecipeUiModel(
-        id = id,
-        title = title,
-        image = image,
-        readyInMinutes = readyInMinutes,
-        servings = servings,
-        aggregateLikes = aggregateLikes,
-        healthScore = healthScore,
-        isFavorite = isFavorite,
-        vegetarian = vegetarian,
-        vegan = vegan,
-        glutenFree = glutenFree,
-        dairyFree = dairyFree,
-        ingredients = ingredients.map { it.toUiModel() }
-    )
-}
-
-fun RecipeIngredientEntity.toUiModel(): IngredientUiModel {
-    return IngredientUiModel(
-        name = name,
-        original = original,
-        amount = amount,
-        unit = unit,
-        image = image?.let { "https://img.spoonacular.com/ingredients_100x100/$it" }
+        pricePerServing = pricePerServing.orDefault(),
+        recipeId = id.orDefault(),
+        spoonacularSourceUrl = spoonacularSourceUrl,
+        summary = summary.orDefault(),
+        instructions = instructions,
+        spoonacularScore = spoonacularScore.orDefault(),
+        ketogenic = ketogenic.orDefault()
     )
 }

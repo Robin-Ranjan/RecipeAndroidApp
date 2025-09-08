@@ -10,10 +10,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rajeev.ranjan.recipeapp.core.RecipeRepository
 import rajeev.ranjan.recipeapp.core.RecipeUiModel
-import rajeev.ranjan.recipeapp.homeScreen.repository.HomeRepository
 
 class HomeScreenViewModel(
-    private val homeRepository: HomeRepository,
     private val recipeRepository: RecipeRepository
 ) : ViewModel() {
 
@@ -22,7 +20,6 @@ class HomeScreenViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState())
 
     init {
-//        fetchRandomRecipes()
         loadRecipes()
     }
 
@@ -36,11 +33,14 @@ class HomeScreenViewModel(
     private fun loadRecipes() {
         viewModelScope.launch {
             recipeRepository.getAllRecipes().collect { recipes ->
-                updateState(
-                    recipes = recipes,
-                    isLoading = false,
-                    isEmpty = recipes.isEmpty()
-                )
+                if (recipes.isEmpty()) {
+                    fetchRandomRecipes()
+                } else {
+                    updateState(
+                        recipes = recipes,
+                        isLoading = false,
+                    )
+                }
             }
         }
     }
@@ -70,7 +70,6 @@ class HomeScreenViewModel(
         isLoading: Boolean = state.value.isLoading,
         isRefreshing: Boolean = state.value.isRefreshing,
         error: String? = state.value.error,
-        isEmpty: Boolean = state.value.isEmpty
     ) {
         _state.update {
             it.copy(
@@ -78,7 +77,6 @@ class HomeScreenViewModel(
                 isLoading = isLoading,
                 isRefreshing = isRefreshing,
                 error = error,
-                isEmpty = isEmpty
             )
         }
     }
@@ -96,8 +94,9 @@ class HomeScreenViewModel(
         val isLoading: Boolean = true,
         val isRefreshing: Boolean = false,
         val error: String? = null,
-        val isEmpty: Boolean = false
-    )
+    ) {
+        val popularRecipes: List<RecipeUiModel> = recipes.filter { it.veryPopular }
+    }
 
     sealed interface Action {
         data object Retry : Action

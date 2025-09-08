@@ -18,4 +18,6 @@ object AppColor {
     val PRIMARY_BLACK = Color(0xFF13161B)
 
     val SECONDARY = Color(0xFF495362)
+
+    val ROSE_COLOR = Color(0xFFE11D48)
 }

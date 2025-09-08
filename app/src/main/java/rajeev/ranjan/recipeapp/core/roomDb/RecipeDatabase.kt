@@ -7,10 +7,12 @@ import androidx.room.TypeConverters
 import rajeev.ranjan.recipeapp.core.RecipeDao
 import rajeev.ranjan.recipeapp.core.RecipeEntity
 import rajeev.ranjan.recipeapp.core.RecipeIngredientDao
-import rajeev.ranjan.recipeapp.core.RecipeIngredientEntity
+import rajeev.ranjan.recipeapp.recopiDetails.model.RecipeDetailsDao
+import rajeev.ranjan.recipeapp.recopiDetails.model.RecipeDetailsEntity
+import rajeev.ranjan.recipeapp.recopiDetails.model.RecipeIngredientEntity
 
 @Database(
-    entities = [RecipeEntity::class, RecipeIngredientEntity::class],
+    entities = [RecipeEntity::class, RecipeIngredientEntity::class, RecipeDetailsEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -18,6 +20,8 @@ import rajeev.ranjan.recipeapp.core.RecipeIngredientEntity
 abstract class RecipeDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
     abstract fun ingredientDao(): RecipeIngredientDao
+
+    abstract fun recipeDetailsDao(): RecipeDetailsDao
 }
 
 class Converters {
