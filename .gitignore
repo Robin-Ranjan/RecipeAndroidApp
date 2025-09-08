@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.kotlin/errors/errors-1757326161099.log
+/.kotlin/errors/*
+/.kotlin/errors/errors-1757326185938.log
