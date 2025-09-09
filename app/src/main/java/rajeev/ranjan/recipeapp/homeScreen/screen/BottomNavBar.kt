@@ -48,6 +48,7 @@ fun BottomNavBar(navController: NavController) {
         ) {
             items.forEach { item ->
                 val selected = currentRoute == item.route
+                val icon = if (selected) item.selectedIcon else item.icon
                 val iconTint = if (selected) AppColor.ORANGE else AppColor.SECONDARY
                 val textColor = if (selected) AppColor.ORANGE else AppColor.SECONDARY
 
@@ -66,7 +67,7 @@ fun BottomNavBar(navController: NavController) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        painter = painterResource(item.icon),
+                        painter = painterResource(icon),
                         contentDescription = item.title,
                         tint = iconTint,
                         modifier = Modifier.size(24.dp)
@@ -89,8 +90,12 @@ fun BottomNavBar(navController: NavController) {
 sealed class BottomNavItem(
     val title: String,
     val icon: Int,
+    val selectedIcon: Int,
     val route: String,
 ) {
-    data object Home : BottomNavItem("Home", R.drawable.home_icon, "home")
-    data object Fav : BottomNavItem("Favorite", R.drawable.fav_icon, "favorite")
+    data object Home :
+        BottomNavItem("Home", R.drawable.home_outline_icon, R.drawable.home_icon, "home")
+
+    data object Fav :
+        BottomNavItem("Favorite", R.drawable.fav_icon, R.drawable.fav_filled_icon, "favorite")
 }

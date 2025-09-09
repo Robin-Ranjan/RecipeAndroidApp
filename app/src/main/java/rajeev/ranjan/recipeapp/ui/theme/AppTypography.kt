@@ -32,7 +32,6 @@ class AppTypography {
             fontWeight = FontWeight.Medium,
             fontSize = 24.sp,
             lineHeight = 32.sp,
-
             color = AppColor.black900
         )
 

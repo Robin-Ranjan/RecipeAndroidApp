@@ -19,6 +19,7 @@ import rajeev.ranjan.recipeapp.favorite.repository.FavoriteRecipeRepository
 import rajeev.ranjan.recipeapp.recopiDetails.repository.RecipeDetailsRepository
 import rajeev.ranjan.recipeapp.search.module.RecipeDetailUiModel
 import rajeev.ranjan.recipeapp.search.module.SearchItem
+import rajeev.ranjan.recipeapp.search.module.SimilarRecipes
 
 @OptIn(FlowPreview::class)
 class SearchViewmodel(
@@ -66,7 +67,13 @@ class SearchViewmodel(
             Action.ResetMessage -> _state.update { it.copy(error = null) }
             is Action.SelectRecipe -> fetchRecipeDetails(action.recipeId)
 
-            is Action.ShowBottomSheet -> _state.update { it.copy(activeBottomSheet = action.sheet) }
+            is Action.ShowBottomSheet -> {
+                _state.update { it.copy(activeBottomSheet = action.sheet) }
+                if (action.sheet == BottomSheetType.SIMILAR_RECOPIES) {
+                    getSimilarRecipes(action.id!!)
+                }
+            }
+
             is Action.OnFavClick -> toggleFavorite(action.recipe)
         }
     }
@@ -76,7 +83,6 @@ class SearchViewmodel(
         searchJob = viewModelScope.launch {
             repository.searchRecipes(query).collect { response ->
                 response.onSuccess { data ->
-                    delay(2000)
                     _state.value = _state.value.copy(
                         data = data.results,
                         isSearching = false
@@ -117,12 +123,26 @@ class SearchViewmodel(
                 favoriteRecipeRepository.removeFromFavorites(recipe.recipeDetailsDto.id.toString())
             } else {
                 favoriteRecipeRepository.addToFavorites(
-                    customNotificationTime = 1 * 60 * 1000,
+                    customNotificationTime = 10 * 60 * 1000, // keeping 10 Sec just to test
                     recipeId = recipe.recipeDetailsDto.id.toString(),
                     title = recipe.recipeDetailsDto.title ?: "",
                     imageUrl = recipe.recipeDetailsDto.image ?: "",
                     readyInMinutes = recipe.recipeDetailsDto.readyInMinutes.toString()
                 )
+            }
+        }
+    }
+
+    private fun getSimilarRecipes(id: String) {
+        _state.update { it.copy(similarLoading = true) }
+        viewModelScope.launch {
+            repository.getSimilarRecipes(id).collect { response ->
+                response.onSuccess { data ->
+                    _state.update { it.copy(similarLoading = false, similarRecipes = data) }
+                }
+                response.onFailure { error ->
+                    _state.update { it.copy(error = error.message, similarLoading = false) }
+                }
             }
         }
     }
@@ -135,19 +155,23 @@ class SearchViewmodel(
 
         val selectedRecipe: RecipeDetailUiModel? = null,
         val isLoadingDetails: Boolean = false,
-        val activeBottomSheet: BottomSheetType? = null
+        val activeBottomSheet: BottomSheetType? = null,
+
+        val similarRecipes: List<SimilarRecipes> = emptyList(),
+        val similarLoading: Boolean = false
     )
 
     sealed interface Action {
         data class OnQueryChange(val query: String) : Action
         data object ResetMessage : Action
         data class SelectRecipe(val recipeId: String) : Action
-        data class ShowBottomSheet(val sheet: BottomSheetType?) : Action
+        data class ShowBottomSheet(val sheet: BottomSheetType?, val id: String? = null) : Action
         data class OnFavClick(val recipe: RecipeDetailUiModel) : Action
     }
 }
 
 enum class BottomSheetType {
     RECIPE_DETAILS,
-    INGREDIENT_DETAILS,
+    RECIPE_INSTRUCTIONS,
+    SIMILAR_RECOPIES
 }

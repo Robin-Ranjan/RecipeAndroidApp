@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -161,7 +163,7 @@ fun HomeScreen(
                             PopularRecipesSection(
                                 item = uiState.popularRecipes
                             )
-                            Spacer(modifier = Modifier.height(32.dp))
+                            Gap(height = 32.dp)
                         }
                     }
 
@@ -181,7 +183,9 @@ fun HomeScreen(
                     }
 
                     items(uiState.recipes, key = { it.id }) {
-                        RecipeItemCard(item = it)
+                        RecipeItemCard(item = it) {
+                            NavigationProvider.navController.navigate(AppRoute.RecipeDetails(it.id.toString()))
+                        }
                         Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
@@ -202,7 +206,7 @@ fun HomeScreen(
                         .background(AppColor.WHITE)
                 ) {
                     Column {
-                        FakeSearchBar(onClick = { }, modifier = Modifier.padding(16.dp))
+                        FakeSearchBar(onClick = { NavigationProvider.navController.navigate(AppRoute.Search())}, modifier = Modifier.padding(16.dp))
                         HorizontalDivider(
                             color = AppColor.GREY_2,
                             thickness = 1.dp,
@@ -236,10 +240,9 @@ fun PopularRecipesSection(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        FlowRow(
+        Row(
             horizontalArrangement = Arrangement.spacedBy(11.dp),
-            maxLines = 1,
-            maxItemsInEachRow = 10
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
         ) {
             item.forEach {
                 RecipeCard(it)

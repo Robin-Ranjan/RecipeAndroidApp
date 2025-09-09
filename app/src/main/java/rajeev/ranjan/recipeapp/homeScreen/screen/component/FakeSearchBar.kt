@@ -32,7 +32,7 @@ fun FakeSearchBar(modifier: Modifier = Modifier, onClick: () -> Unit) {
             .height(40.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() },
-        color = Color(0xFFF5F6FA),
+        color = AppColor.CARD_DEFAULT,
         tonalElevation = 0.dp
     ) {
         Row(

@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import rajeev.ranjan.recipeapp.MainActivity
 import rajeev.ranjan.recipeapp.R
+import rajeev.ranjan.recipeapp.core.utils.asName
 import rajeev.ranjan.recipeapp.favorite.model.FavoriteRecipeEntity
 
 class NotificationHelper(private val context: Context) {
@@ -65,10 +66,11 @@ class NotificationHelper(private val context: Context) {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.home_icon)
             .setContentTitle("🍳 Recipe Reminder")
-            .setContentText("Time to cook: ${recipe.title}")
+            .setContentText("Time to cook: ${recipe.title.asName()}")
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("Ready in ${recipe.readyInMinutes} minutes. Tap to search for similar recipes!")
+                    .bigText("“Don’t forget! You saved ${recipe.title.asName()}. Tap to view recipe.")
+
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
@@ -79,9 +81,6 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun createDeepLinkUri(recipe: FavoriteRecipeEntity): Uri {
-        return ("recipeapp://search?" +
-                "query=${Uri.encode(recipe.title)}&" +
-                "recipeId=${recipe.recipeId}&" +
-                "fromNotification=true").toUri()
+        return "recipeapp://recipe/${recipe.recipeId}".toUri()
     }
 }

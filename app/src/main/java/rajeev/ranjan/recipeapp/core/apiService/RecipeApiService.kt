@@ -6,6 +6,7 @@ import rajeev.ranjan.networkmodule.SafeRequest.safeGet
 import rajeev.ranjan.recipeapp.core.RecipeApiResponse
 import rajeev.ranjan.recipeapp.search.module.RecipeDetailsDto
 import rajeev.ranjan.recipeapp.search.module.SearchResult
+import rajeev.ranjan.recipeapp.search.module.SimilarRecipes
 
 class RecipeApiService(private val client: IApiServiceClientProvider) {
     suspend fun getRandomRecipe(): ResponseWrapper<RecipeApiResponse> {
@@ -25,6 +26,12 @@ class RecipeApiService(private val client: IApiServiceClientProvider) {
     suspend fun getRecipeDetail(id: String): ResponseWrapper<RecipeDetailsDto> {
         return client.safeGet(
             rawPath = "recipes/$id/information",
+        )
+    }
+
+    suspend fun getSimilarRecipe(id: String): ResponseWrapper<List<SimilarRecipes>> {
+        return client.safeGet(
+            rawPath = "recipes/$id/similar",
         )
     }
 }

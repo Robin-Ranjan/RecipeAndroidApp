@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import rajeev.ranjan.recipeapp.ui.theme.AppColor
 import rajeev.ranjan.recipeapp.ui.theme.AppTheme
@@ -29,10 +31,8 @@ import rajeev.ranjan.recipeapp.ui.theme.Gap
 @Composable
 fun ReminderBottomSheet(
     onDismiss: () -> Unit,
-    onReminderSet: (String) -> Unit
+    onReminderSet: (ReminderTimes) -> Unit
 ) {
-    var selectedTime by remember { mutableStateOf("30m") }
-
     AppBottomSheet(
         onDismiss = onDismiss
     ) { state, scope ->
@@ -44,9 +44,12 @@ fun ReminderBottomSheet(
             // Title
             Text(
                 text = "Set a Reminder",
+                modifier = Modifier.padding(horizontal = 16.dp),
                 style = AppTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = AppColor.PRIMARY_BLACK
+                    fontWeight = FontWeight.W700,
+                    color = AppColor.PRIMARY_BLACK,
+                    fontSize = 24.sp,
+                    lineHeight = 24.sp
                 )
             )
 
@@ -55,50 +58,70 @@ fun ReminderBottomSheet(
             // Subtitle
             Text(
                 text = "You will be reminded in",
+                modifier = Modifier.padding(horizontal = 16.dp),
                 style = AppTheme.typography.bodySmall.copy(
-                    color = AppColor.GREY_2
+                    color = AppColor.SECONDARY,
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight.W400
                 )
             )
 
-            Gap(height = 20.dp)
+            Gap(height = 16.dp)
 
-            // Time selection buttons
+            HorizontalDivider(thickness = 1.dp, color = AppColor.NEUTRAL_LIGHT)
+
+            Gap(height = 16.dp)
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                val timeOptions = listOf("30m", "1h 30m", "2h")
 
-                timeOptions.forEach { time ->
+                ReminderTimes.entries.forEach { time ->
                     Button(
                         onClick = {
                             scope.launch {
-                                state.hide()
                                 onReminderSet(time)
+                                state.hide()
+                                onDismiss()
                             }
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedTime == time) AppColor.ORANGE else Color.Transparent,
-                            contentColor = if (selectedTime == time) AppColor.WHITE else AppColor.PRIMARY_BLACK
+                            containerColor = Color.Transparent,
+                            contentColor = AppColor.ORANGE
                         ),
-                        border = if (selectedTime != time) BorderStroke(
+                        border = BorderStroke(
                             1.dp,
-                            AppColor.GREY_2
-                        ) else null,
-                        shape = RoundedCornerShape(24.dp)
+                            AppColor.NEUTRAL_LIGHT,
+                        ),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = time,
+                            text = time.label,
                             style = AppTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.W700,
+                                fontSize = 16.sp,
+                                lineHeight = 20.sp,
+                                color = AppColor.ORANGE
                             )
                         )
                     }
                 }
             }
-
-            Gap(height = 24.dp)
+            Gap(height = 16.dp)
         }
     }
 }
+
+enum class ReminderTimes(private val hours: Double, val label: String) {
+    THIRTY_MINUTES(0.5, "30m"),
+    ONE_HOUR_THIRTY_MINUTES(1.5, "1h 30m"),
+    TWO_HOURS(2.0, "2h");
+
+    val millis: Long get() = (hours * 60 * 60 * 1000).toLong()
+}
+

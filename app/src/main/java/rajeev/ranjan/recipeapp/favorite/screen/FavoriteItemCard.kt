@@ -28,8 +28,9 @@ import rajeev.ranjan.recipeapp.ui.theme.AppColor
 import rajeev.ranjan.recipeapp.ui.theme.AppTheme
 
 @Composable
-fun FavoriteItemCard(item: FavoriteRecipeEntity) {
+fun FavoriteItemCard(item: FavoriteRecipeEntity, onClick: () -> Unit) {
     Surface(
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         color = AppColor.WHITE,
         border = BorderStroke(width = 1.dp, color = AppColor.GREY_2)

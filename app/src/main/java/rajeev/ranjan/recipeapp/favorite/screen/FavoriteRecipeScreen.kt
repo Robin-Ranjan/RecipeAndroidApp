@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,10 +32,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import rajeev.ranjan.recipeapp.core.base_ui.ErrorScreen
+import rajeev.ranjan.recipeapp.core.navigation.AppRoute
+import rajeev.ranjan.recipeapp.core.navigation.NavigationProvider
 import rajeev.ranjan.recipeapp.favorite.viewModel.FavoriteViewModel
 import rajeev.ranjan.recipeapp.ui.theme.AppColor
 import rajeev.ranjan.recipeapp.ui.theme.AppTheme
-import rajeev.ranjan.recipeapp.ui.theme.Gap
 
 @Composable
 fun FavoriteRecipeScreenRoot(viewmodel: FavoriteViewModel = koinViewModel()) {
@@ -60,6 +64,13 @@ fun FavoriteRecipeScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (FavoriteViewModel.Action) -> Unit
 ) {
+
+    val lazyListState = rememberLazyListState()
+
+    val isScrolling = remember {
+        derivedStateOf { lazyListState.firstVisibleItemScrollOffset > 0}
+    }
+
     Scaffold(
         containerColor = AppColor.WHITE,
         snackbarHost = {
@@ -77,17 +88,21 @@ fun FavoriteRecipeScreen(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Favorite Recipe Screen",
-                    modifier = Modifier,
+                    text = "Favorite Recipe",
+                    modifier = Modifier.padding(16.dp),
                     style = AppTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.W700,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp,
+                        fontSize = 20.sp,
+                        lineHeight = 26.sp,
                         color = AppColor.PRIMARY_BLACK
                     )
                 )
-
-                Gap(height = 30.dp)
+                if (isScrolling.value) {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = AppColor.SECONDARY
+                    )
+                }
 
                 when {
                     uiState.isLoading -> {
@@ -101,10 +116,18 @@ fun FavoriteRecipeScreen(
                     else -> {
                         LazyColumn(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
                         ) {
                             items(uiState.favoriteRecipes) { recipe ->
-                                FavoriteItemCard(recipe)
+                                FavoriteItemCard(recipe) {
+                                    NavigationProvider.navController.navigate(
+                                        AppRoute.RecipeDetails(
+                                            recipe.id.toString()
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import rajeev.ranjan.networkmodule.ResponseWrapper
 import rajeev.ranjan.recipeapp.core.apiService.RecipeApiService
 import rajeev.ranjan.recipeapp.search.module.SearchResult
+import rajeev.ranjan.recipeapp.search.module.SimilarRecipes
 
 class RecipeRepositoryImpl(
     private val api: RecipeApiService,
@@ -41,5 +42,10 @@ class RecipeRepositoryImpl(
     override suspend fun searchRecipes(query: String): Flow<ResponseWrapper<SearchResult>> =
         flow {
             emit(api.getSearchRecipe(query))
+        }
+
+    override suspend fun getSimilarRecipes(id: String): Flow<ResponseWrapper<List<SimilarRecipes>>> =
+        flow {
+            emit(api.getSimilarRecipe(id))
         }
 }

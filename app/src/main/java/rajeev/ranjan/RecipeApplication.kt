@@ -14,7 +14,7 @@ class RecipeApplication : Application(), Configuration.Provider {
         initKoin(context = applicationContext, baseUrl = "https://api.spoonacular.com/")
 
         val workManagerRepository = get<WorkManagerRepository>()
-        workManagerRepository.scheduleRecipeNotificationsEvery10Seconds()
+        workManagerRepository.scheduleRecipeNotificationsEvery1Hour()
     }
 
     override val workManagerConfiguration: Configuration

@@ -29,8 +29,12 @@ import rajeev.ranjan.recipeapp.ui.theme.AppTheme
 
 
 @Composable
-fun RecipeItemCard(item: RecipeUiModel) {
+fun RecipeItemCard(
+    item: RecipeUiModel,
+    onClick: () -> Unit = {}
+) {
     Surface(
+        onClick = { onClick() },
         shape = RoundedCornerShape(12.dp),
         color = AppColor.WHITE,
         border = BorderStroke(width = 1.dp, color = AppColor.GREY_2)

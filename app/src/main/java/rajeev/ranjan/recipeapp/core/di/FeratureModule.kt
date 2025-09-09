@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import rajeev.ranjan.networkmodule.ApiServiceClientProvider
 import rajeev.ranjan.networkmodule.IApiServiceClientProvider
 import rajeev.ranjan.recipeapp.favorite.di.favRecipe
+import rajeev.ranjan.recipeapp.fullDetails.di.recipeModule
 import rajeev.ranjan.recipeapp.homeScreen.di.homeModule
 import rajeev.ranjan.recipeapp.notification.notificationModule
 import rajeev.ranjan.recipeapp.recopiDetails.di.receiptDetails
@@ -21,6 +22,7 @@ internal fun featuredModule(context: Context, baseUrl: String): List<Module> = l
     searchModule,
     favRecipe,
     notificationModule,
-    receiptDetails
+    receiptDetails,
+    recipeModule
 )
 

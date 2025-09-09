@@ -1,6 +1,7 @@
 package rajeev.ranjan.recipeapp.core.base_ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import rajeev.ranjan.recipeapp.R
 import rajeev.ranjan.recipeapp.ui.theme.AppColor
+import rajeev.ranjan.recipeapp.ui.theme.Gap
 
 
 @Composable
@@ -52,6 +54,7 @@ fun AppBottomSheet(
         dragHandle = {}
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
+            Gap(height = 30.dp)
             BottomSheetDragHandle(onDismiss = {
                 scope.launch {
                     sheetState.hide()
@@ -84,7 +87,11 @@ fun BottomSheetDragHandle(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Transparent)
-            .padding(vertical = 16.dp),
+            .padding(vertical = 16.dp)
+            .then(
+                if (type == DragHandleType.BACK) Modifier.padding(start = 16.dp)
+                else Modifier
+            ),
         contentAlignment = when (type) {
             DragHandleType.CROSS -> Alignment.Center
             DragHandleType.BACK -> Alignment.CenterStart
@@ -92,9 +99,11 @@ fun BottomSheetDragHandle(
     ) {
         Box(
             modifier = Modifier
-                .size(32.dp)
+                .size(40.dp)
                 .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.7f))
+                .background(Color(0xFF161616))
+                .border(width = 1.dp, color = Color(0x33FFFFFF), shape = CircleShape)
+                .padding(8.dp)
                 .clickable { onDismiss() },
             contentAlignment = Alignment.Center
         ) {

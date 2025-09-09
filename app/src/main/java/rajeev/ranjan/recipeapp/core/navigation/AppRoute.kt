@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 sealed interface AppRoute {
 
     @Serializable
+    data object Splash : AppRoute
+
+    @Serializable
     data object Home : AppRoute
 
     @Serializable
@@ -13,4 +16,7 @@ sealed interface AppRoute {
         val recipeId: Int = -1,
         val fromNotification: Boolean = false
     ) : AppRoute
+
+    @Serializable
+    data class RecipeDetails(val id: String) : AppRoute
 }

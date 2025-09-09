@@ -5,13 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
@@ -27,15 +25,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import rajeev.ranjan.recipeapp.R
 import rajeev.ranjan.recipeapp.core.navigation.NavigationProvider
 import rajeev.ranjan.recipeapp.search.viewModel.SearchViewmodel
 import rajeev.ranjan.recipeapp.ui.theme.AppColor
 import rajeev.ranjan.recipeapp.ui.theme.AppTheme
+import rajeev.ranjan.recipeapp.ui.theme.Gap
 
 @Composable
 fun AppSearchBar(
@@ -47,12 +49,13 @@ fun AppSearchBar(
     val focusRequester = remember { FocusRequester() }
 
     Surface(
-        tonalElevation = 1.dp,
-        color = AppColor.WHITE,
+        tonalElevation = 0.dp,
+        color = AppColor.CARD_DEFAULT,
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = statusBarHeight)
+            .padding(vertical = 10.dp, horizontal = 12.dp)
     ) {
         // Single search bar with everything inside
         BasicTextField(
@@ -68,15 +71,14 @@ fun AppSearchBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(44.dp)
-                .padding(horizontal = 16.dp)
                 .border(
                     width = 1.dp,
-                    color = if (isFocused) AppColor.ORANGE else AppColor.SECONDARY,
-                    shape = RoundedCornerShape(8.dp)
+                    color = if (isFocused) AppColor.ORANGE else Color.Transparent,
+                    shape = RoundedCornerShape(12.dp)
                 )
                 .background(
-                    color = AppColor.WHITE,
-                    shape = RoundedCornerShape(8.dp)
+                    color = AppColor.CARD_DEFAULT,
+                    shape = RoundedCornerShape(12.dp)
                 )
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState ->
@@ -89,7 +91,7 @@ fun AppSearchBar(
                         .padding(horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Back button INSIDE the search bar
+
                     Icon(
                         painter = painterResource(R.drawable.back_icon),
                         contentDescription = "Back",
@@ -101,9 +103,8 @@ fun AppSearchBar(
                             }
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Gap(width = 12.dp)
 
-                    // Text content area
                     Box(
                         modifier = Modifier.weight(1f),
                         contentAlignment = Alignment.CenterStart
@@ -112,14 +113,16 @@ fun AppSearchBar(
                             Text(
                                 text = "Search Any Recipe",
                                 style = AppTheme.typography.bodySmall.copy(
-                                    color = AppColor.SECONDARY
+                                    color = AppColor.SECONDARY,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    lineHeight = 20.sp
                                 )
                             )
                         }
                         innerTextField()
                     }
 
-                    // Clear button INSIDE the search bar (when text exists)
                     if (query.isNotEmpty()) {
                         Icon(
                             painter = painterResource(R.drawable.cross_icon),

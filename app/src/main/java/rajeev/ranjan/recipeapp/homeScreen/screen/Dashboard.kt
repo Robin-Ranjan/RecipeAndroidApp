@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import rajeev.ranjan.recipeapp.favorite.screen.FavoriteRecipeScreenRoot
+import rajeev.ranjan.recipeapp.ui.theme.AppColor
+import rajeev.ranjan.recipeapp.ui.theme.UpdateStatusBarAppearance
 
 @Composable
 fun Dashboard() {
@@ -28,6 +30,7 @@ fun Dashboard() {
     val navigationBarHeight by rememberUpdatedState(
         newValue = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     )
+    UpdateStatusBarAppearance(AppColor.PRIMARY_BLACK)
     Scaffold(
         topBar = {
             Box(
